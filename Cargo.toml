@@ -1,7 +1,16 @@
 [package]
-name = "git-switch"
+name = "git-switch-branch"
 version = "0.1.0"
+description = "quickly switch git branches visually from the terminal"
+readme = "README.md"
+license = "MIT"
+license-file = "LICENSE"
+homepage = "http://github.com/nlfmt/git-switch-branch"
+repository = "http://github.com/nlfmt/git-switch-branch"
 edition = "2021"
+keywords = ["git", "branch", "checkout", "terminal", "cli"]
+categories = ["development-tools","command-line-utilities"]
 
 [dependencies]
 crossterm = "0.28.1"
+dirs = "5.0.1"
