@@ -32,3 +32,11 @@ pub fn poll_keypress(timeout: Duration) -> std::io::Result<Option<KeyEvent>> {
     }
     Ok(None)
 }
+
+#[macro_export]
+macro_rules! fatal {
+    ($($arg:tt)*) => {{
+        eprintln!($($arg)*);
+        std::process::exit(1);
+    }};
+}

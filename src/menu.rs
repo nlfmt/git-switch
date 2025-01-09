@@ -1,4 +1,4 @@
-use std::{io::stdout, process::exit, time::Duration};
+use std::{fmt::Display, io::stdout, process::exit, time::Duration};
 
 use crossterm::{
     cursor::{self, MoveTo},
@@ -14,18 +14,18 @@ use crossterm::{
 
 use crate::util::{poll_keypress, CircularCounter};
 
-pub struct Menu {
-    pub items: Vec<String>,
+pub struct Menu<'a, T: Display> {
+    pub items: &'a [T],
     pub current: Option<usize>,
     pub current_label: String,
     pub current_label_style: ContentStyle,
     pub selected_style: ContentStyle,
 }
 
-impl Default for Menu {
+impl<'a, T: Display> Default for Menu<'a, T> {
     fn default() -> Self {
         Self {
-            items: Vec::new(),
+            items: &[],
             current: None,
             current_label: "(current)".to_string(),
             current_label_style: ContentStyle::new().yellow(),
@@ -34,7 +34,7 @@ impl Default for Menu {
     }
 }
 
-fn print_menu(menu: &Menu, selected: usize) -> std::io::Result<()> {
+fn print_menu<T: Display>(menu: &Menu<T>, selected: usize) -> std::io::Result<()> {
     for i in 0..menu.items.len() {
         print_menu_item(menu, i, i == selected)?;
 
@@ -53,13 +53,17 @@ fn print_menu(menu: &Menu, selected: usize) -> std::io::Result<()> {
     Ok(())
 }
 
-fn print_menu_item(menu: &Menu, index: usize, selected: bool) -> std::io::Result<()> {
+fn print_menu_item<T: Display>(
+    menu: &Menu<T>,
+    index: usize,
+    selected: bool,
+) -> std::io::Result<()> {
     let item = &menu.items[index];
     if selected {
         queue![
             stdout(),
             Print("> "),
-            PrintStyledContent(StyledContent::new(menu.selected_style, item.as_str())),
+            PrintStyledContent(StyledContent::new(menu.selected_style, item)),
         ]?;
     } else {
         queue!(stdout(), Print(format!("  {}", item)))?;
@@ -97,7 +101,7 @@ impl MenuAction {
     }
 }
 
-pub fn run_menu(menu: &Menu) -> std::io::Result<usize> {
+pub fn run_menu<T: Display>(menu: &Menu<T>) -> std::io::Result<usize> {
     let mut stdout = stdout();
     let mut counter = CircularCounter {
         size: menu.items.len(),

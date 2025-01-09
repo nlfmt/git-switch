@@ -1,47 +1,37 @@
+use git_switch_branch::{add_alias, fatal, help, list_alias, remove_alias, switch_branch, Command};
 use std::{env, process::exit};
-use git_switch_branch::{add_alias, help, list_alias, remove_alias, switch_branch};
 
 fn main() {
     let version = env!("CARGO_PKG_VERSION");
 
-    let mut remote = false;
-    let mut local = true;
-    
-    if let Some(arg) = env::args().nth(1) {
-        if arg == "help" || arg == "-h" || arg == "--help" {
-            help(version);
-            exit(0);
-        }
-        else if arg == "version" || arg == "-v" || arg == "--version" {
-            println!("{}", version);
-            exit(0);
-        }
-        else if arg == "add-alias" {
-            add_alias();
-            exit(0);
-        }
-        else if arg == "remove-alias" {
-            remove_alias();
-            exit(0);
-        }
-        else if arg == "alias" {
-            list_alias();
-            exit(0);
-        }
-        else if arg == "remote" || arg == "r" {
-            remote = true;
-            local = false;
-        }
-        else if arg == "all" || arg == "a" {
-            remote = true;
-        }
-        else {
-            eprintln!("Unknown argument: {}", arg);
-            help(version);
-            exit(1);
-        }
+    match env::args().nth(1) {
+        None => switch_branch(true, false),
+        Some(arg) => match Command::from(&arg) {
+            Command::Help => {
+                help(version);
+            }
+            Command::Version => {
+                println!("{}", version);
+            }
+            Command::Alias => match env::args().nth(2) {
+                None => list_alias(),
+                Some(v) => match v.as_str() {
+                    "add" => add_alias(),
+                    "remove" => remove_alias(),
+                    _ => fatal!("Unknown option '{}'", v),
+                },
+            },
+            Command::Remote => {
+                switch_branch(false, true);
+            }
+            Command::All => {
+                switch_branch(true, true);
+            }
+            Command::Invalid => {
+                eprintln!("Unknown argument: {}", arg);
+                help(version);
+                exit(1);
+            }
+        },
     }
-    
-    switch_branch(local, remote);
 }
-
