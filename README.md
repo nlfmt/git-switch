@@ -9,7 +9,7 @@ cargo install git-switch-branch
 
 You can then run it directly using `git-switch-branch`, or configure an alias:
 ```
-git-switch-branch alias
+git-switch-branch alias add
 ```
 
 ## Usage
@@ -17,7 +17,7 @@ To start the branch selection menu, just run:
 ```
 git sw
 ```
-*Note: This assumes you've aliased `git-switch-branch` to `sw`*
+*Note: This assumes you've set the alias `sw`*
 
 To view only remote branches:
 ```
@@ -33,11 +33,11 @@ git sw all
 ## Uninstall
 First, make sure to remove any existing aliases:
 ```
-git-switch-branch remove-alias
+git-switch-branch alias remove
 ```
 or
 ```
-git <your-alias> remove-alias
+git <your-alias> alias remove
 ```
 then, uninstall it using cargo:
 ```
